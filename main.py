@@ -3,16 +3,23 @@ import requests
 import json
 import platform
 import os
+import ollama
+
+l = ollama.list()['models']
+available_models=[]
+for i in l:
+    available_models.append(i['model'])
 
 # Configuration
 DEFAULT_OLLAMA_URL = "http://localhost:11434"
-DEFAULT_MODEL_NAME = "llama3"
+if len(available_models)>0:
+    DEFAULT_MODEL_NAME = available_models[0] 
+else:
+    DEFAULT_MODEL_NAME = "Please Pull a Model"
 
 # Available models in your system
 AVAILABLE_MODELS = [
-    "llama3:latest",
-    "codestral:latest",
-    "phi3:latest"
+    *available_models
 ]
 
 def get_hostname():
@@ -33,25 +40,28 @@ def generate_text(prompt, server_url, model_name, temperature=0.7, max_tokens=10
             "num_predict": max_tokens,
         }
     }
-
     try:
-        response = requests.post(
-            generate_url,
-            headers={"Content-Type": "application/json"},
-            json=payload,
-            stream=True
-        )
-        response.raise_for_status()
-        
-        result = ""
-        for line in response.iter_lines():
-            if line:
-                json_line = json.loads(line)
-                result += json_line.get("response", "")
-        return result
-        
+        if model_name!="Please Pull a Model":
+            response = requests.post(
+                generate_url,
+                headers={"Content-Type": "application/json"},
+                json=payload,
+                stream=True
+            )
+            response.raise_for_status()
+            
+            result = ""
+            for line in response.iter_lines():
+                if line:
+                    json_line = json.loads(line)
+                    result += json_line.get("response", "")
+                    yield result
+        else:
+            yield "No Model found Please Pull a model eg 'ollama pull llama3.1'"
+
+
     except Exception as e:
-        return f"Error: {str(e)}"
+        yield f"Error: {str(e)}"
 
 def pull_model(model_name, server_url):
     """Pull a new model from Ollama"""
@@ -89,7 +99,7 @@ def build_interface():
             model_name = gr.Dropdown(
                 label="Model",
                 choices=AVAILABLE_MODELS,
-                value=DEFAULT_MODEL_NAME + ":latest",
+                value=DEFAULT_MODEL_NAME,
                 allow_custom_value=True
             )
 
