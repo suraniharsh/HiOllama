@@ -2,7 +2,7 @@
 
 A sleek and user-friendly interface for interacting with Ollama models, built with Python and Gradio.
 
-![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
 ![Gradio](https://img.shields.io/badge/gradio-latest-orange.svg)
 ![Ollama](https://img.shields.io/badge/ollama-compatible-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -22,8 +22,8 @@ A sleek and user-friendly interface for interacting with Ollama models, built wi
 
 ## 🔧 Prerequisites
 
-- Python 3.8 or higher
-- Ollama installed and running
+- Python 3.12 or higher
+- [Ollama](https://ollama.com/)
 - Available models:
   - llama3
   - codestral
